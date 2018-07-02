@@ -43,13 +43,49 @@ var cy = cytoscape({
       .css({
         'opacity': 0.25,
         'text-opacity': 0
-      }),
-
-  layout: {
-    name: 'grid', 
-    padding: 10
-  }
+      })
+    .selector('.eh-handle')
+      .css({
+        'background-color': 'red',
+        'width': 12,
+        'height': 12,
+        'shape': 'ellipse',
+        'overlay-opacity': 0,
+        'border-width': 12, // makes the handle easier to hit
+        'border-opacity': 0
+      })
+    .selector('.eh-hover')
+      .css({
+        'background-color': 'red'
+      })
+    .selector('.eh-source')
+      .css({
+        'border-width': 2,
+        'border-color': 'red'
+      })
+    .selector('.eh-target')
+      .css({
+        'border-width': 2,
+        'border-color': 'red'
+      })
+    .selector('.eh-preview, .eh-ghost-edge')
+      .css({
+        'background-color': 'red',
+        'line-color': 'red',
+        'target-arrow-color': 'red',
+        'source-arrow-color': 'red'
+      })
+    .selector('$node > node')
+      .css({
+        'text-valign': 'center',
+        'text-halign': 'center',
+        'shape': 'cutrectangle',
+        'border-width': 2
+      })
 });
+
+var eh = cy.edgehandles();
+
 
 
 // WorkflowManager //
@@ -109,7 +145,8 @@ btn.onclick = function() {
       nodeSpacement += 25;      
       parentNode.push(childNode);
   }
-   
+
+  console.log(parentNode);
   cy.add(parentNode);
 
   // lock child nodes
@@ -158,6 +195,8 @@ addFilter.onclick = function() {
       nodeSpacement += 25;      
       parentNode.push(childNode);
   }
+
+  console.log(parentNode);
 
   // Output nodes
   nodeSpacement = 0;
