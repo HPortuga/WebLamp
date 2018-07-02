@@ -17,7 +17,13 @@ class DataReader {
 		this.matriz = constroiMatriz(contents, 0, 0);
 	}
 }
+// asdasdasd
+// asdadadasdadasdasdasd
+//asdasdasdasd
+// asdasdasdadasd
+//asdasdasdasd
 
+//asdasdasd
 // Constrói uma matiz[][] a partir do conteúdo de um ficheiro ou uma matriz[][] vazia
 function constroiMatriz(contents, numLinhas, numDimensoes) {
 	if (contents == null) {
