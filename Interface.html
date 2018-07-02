@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>WebLamp</title>
+	<link rel="stylesheet" type="text/css" href="InterfaceStyle.css">
+	<script src="cytoscape.min.js"></script>
+</head>
+<body>
+
+
+<aside id="menu">
+	<h1>Opções</h1>
+
+	<div id="forms">		
+		<label>Adicionar Data Reader</label>
+		<br><hr>
+
+		<form id="readerForm" class="nodeForms">
+			<label for="readerName">Nome:</label>
+			<input id="readerName" type="text">
+			<br><br>
+
+			<label for="nSaidasReader">Nº de saídas:</label>
+			<select id="nSaidasReader">
+				<script>
+					var numOpcoes = 4;
+					for (var i = 0; i < numOpcoes; i++) {
+						var nSaidasReader = document.getElementById("nSaidasReader");
+						var option = document.createElement("option");
+						option.setAttribute("value", i+1);
+						option.innerHTML = i+1;
+						nSaidasReader.appendChild(option);
+					}
+				</script>
+			</select>
+			<br><br>
+
+			<input type="file" onchange="onFileSelected(event)"><br><br>
+
+			<button id="addReader" style="width:98%">Adicionar &#9654</button>
+			<hr>
+		</form>
+
+		<label>Adicionar Data Filter</label>
+		<br><hr>
+
+		<form id="filterForm" class="nodeForms">
+			<label for="filterName">Nome:</label>
+			<input id="filterName" type="text">
+			<br><br>
+
+			<label for="nEntradasFilter">Nº de entradas:</label>
+			<select id="nEntradasFilter">
+				<script>
+					var numOpcoes = 4;
+					for (var i = 0; i < numOpcoes; i++) {
+						var nEntradasFilter = document.getElementById("nEntradasFilter");
+						var option = document.createElement("option");
+						option.setAttribute("value", i+1);
+						option.innerHTML = i+1;
+						nEntradasFilter.appendChild(option);
+					}
+				</script>
+			</select>
+			<br><br>
+
+			<label for="nSaidasFilter">Nº de saídas:</label>
+			<select id="nSaidasFilter">
+				<script>
+					var numOpcoes = 4;
+					for (var i = 0; i < numOpcoes; i++) {
+						var nSaidasFilter = document.getElementById("nSaidasFilter");
+						var option = document.createElement("option");
+						option.setAttribute("value", i+1);
+						option.innerHTML = i+1;
+						nSaidasFilter.appendChild(option);
+					}
+				</script>
+			</select>
+			<br><br>
+
+			<button id="addFilter" style="width:98%">Adicionar &#9654</button>
+			<hr>
+		</form>
+
+		<form id="writerForm" class="nodeForms">
+		</form>
+	</div>
+
+</aside>
+
+<div id="workflow"></div>
+<script type="text/javascript" src="DataReader.js"></script>
+<script type="text/javascript" src="Workflow.js"></script>
+</body>
+</html>
