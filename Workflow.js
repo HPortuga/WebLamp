@@ -150,8 +150,11 @@ btn.onclick = function() {
   cy.add(parentNode);
 
   // lock child nodes
-  for (var i = 1; i < parentNode.length; i++) 
-    cy.$("#" + parentNode[i].data.id).ungrabify();
+  for (var i = 1; i < parentNode.length; i++) {
+    cy.$("#" + parentNode[i].data.id)
+      .on('grab', function(){ this.ungrabify(); })
+      .on('free', function(){ this.grabify(); });
+  }
   
   // Stop the page from refreshing after btn click
   return false;
@@ -219,9 +222,11 @@ addFilter.onclick = function() {
   }
 
   cy.add(parentNode);
-
-  for (var i = 1; i < parentNode.length; i++) 
-    cy.$("#" + parentNode[i].data.id).ungrabify();
+  for (var i = 1; i < parentNode.length; i++) {
+    cy.$("#" + parentNode[i].data.id)
+      .on('grab', function(){ this.ungrabify(); })
+      .on('free', function(){ this.grabify(); });
+  }
 
   return false;
 }
