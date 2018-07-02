@@ -112,12 +112,81 @@ btn.onclick = function() {
    
   cy.add(parentNode);
 
-  console.log(parentNode);
-
   // lock child nodes
   for (var i = 1; i < parentNode.length; i++) 
     cy.$("#" + parentNode[i].data.id).ungrabify();
   
   // Stop the page from refreshing after btn click
   return false;
+}
+
+// Add Data Filter
+var addFilter = document.getElementById("addFilter");
+addFilter.onclick = function() {
+  var nodeDataFilter = {
+    nome: document.getElementById("filterName").value,
+    nEntradas: document.getElementById("nEntradasFilter").value,
+    nSaidas: document.getElementById("nSaidasFilter").value,
+    data: getInput()
+  };
+
+  var parentNode = [{
+    group: "nodes",
+    data: {
+      id: nodeIds++,
+      name: nodeDataFilter.nome,
+      output: nodeDataFilter.data
+    }
+  }];
+
+  // Input nodes
+  var nodeSpacement = 0;
+  var nodeHeight = -33;
+  while (nodeDataFilter.nEntradas-- > 0) {
+    var childNode = {
+      group: "nodes",
+      data: {
+        id: nodeIds++,
+        parent: parentNode[0].data.id
+      },
+      renderedPosition: {
+        x: nodeSpacement,
+        y: nodeHeight
+        }
+      };
+
+      nodeSpacement += 25;      
+      parentNode.push(childNode);
+  }
+
+  // Output nodes
+  nodeSpacement = 0;
+  nodeHeight = 33;
+  while (nodeDataFilter.nSaidas-- > 0) {
+    var childNode = {
+      group: "nodes",
+      data: {
+        id: nodeIds++,
+        parent: parentNode[0].data.id
+      },
+      renderedPosition: {
+        x: nodeSpacement,
+        y: nodeHeight
+        }
+      };
+
+      nodeSpacement += 25;      
+      parentNode.push(childNode);
+  }
+
+  cy.add(parentNode);
+
+  for (var i = 1; i < parentNode.length; i++) 
+    cy.$("#" + parentNode[i].data.id).ungrabify();
+
+  return false;
+}
+
+function getInput() {
+  return null;
 }
