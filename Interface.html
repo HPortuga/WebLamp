@@ -84,7 +84,31 @@
 			<hr>
 		</form>
 
+		<label>Adicionar Data Writer</label>
+		<br><hr>
+
 		<form id="writerForm" class="nodeForms">
+		<label for="writerName">Nome:</label>
+			<input id="writerName" type="text">
+			<br><br>
+
+			<label for="nEntradasWriter">Nº de entradas:</label>
+			<select id="nEntradasWriter">
+				<script>
+					var numOpcoes = 4;
+					for (var i = 0; i < numOpcoes; i++) {
+						var nEntradasWriter = document.getElementById("nEntradasWriter");
+						var option = document.createElement("option");
+						option.setAttribute("value", i+1);
+						option.innerHTML = i+1;
+						nEntradasWriter.appendChild(option);
+					}
+				</script>
+			</select>
+			<br><br>
+
+			<button id="addWriter" style="width:98%">Adicionar &#9654</button>
+			<hr>
 		</form>
 	</div>
 

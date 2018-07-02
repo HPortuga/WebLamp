@@ -122,7 +122,11 @@ btn.onclick = function() {
       id: nodeIds++,
       parent: parentNode[0].data.id
     },
-    classes: 'ghost'
+    classes: 'ghost',
+    renderedPosition: {
+      x: 0,
+      y: 10
+    }
   };
   parentNode.push(ghostNode);
 
@@ -146,7 +150,6 @@ btn.onclick = function() {
       parentNode.push(childNode);
   }
 
-  console.log(parentNode);
   cy.add(parentNode);
 
   // lock child nodes
@@ -166,16 +169,14 @@ addFilter.onclick = function() {
   var nodeDataFilter = {
     nome: document.getElementById("filterName").value,
     nEntradas: document.getElementById("nEntradasFilter").value,
-    nSaidas: document.getElementById("nSaidasFilter").value,
-    data: getInput()
+    nSaidas: document.getElementById("nSaidasFilter").value
   };
 
   var parentNode = [{
     group: "nodes",
     data: {
       id: nodeIds++,
-      name: nodeDataFilter.nome,
-      output: nodeDataFilter.data
+      name: nodeDataFilter.nome
     }
   }];
 
@@ -198,8 +199,6 @@ addFilter.onclick = function() {
       nodeSpacement += 25;      
       parentNode.push(childNode);
   }
-
-  console.log(parentNode);
 
   // Output nodes
   nodeSpacement = 0;
@@ -231,6 +230,68 @@ addFilter.onclick = function() {
   return false;
 }
 
-function getInput() {
-  return null;
+
+// Add Data Writer
+var addWriter = document.getElementById("addWriter");
+addWriter.onclick = function() {
+  var nodeDataWriter = {
+    nome: document.getElementById("writerName").value,
+    nEntradas: document.getElementById("nEntradasWriter").value
+  };
+
+  // [0] = parent node; [>0] = child nodes
+  var parentNode = [{
+    group: "nodes",
+    data: {
+      id: nodeIds++,
+      name: nodeDataWriter.nome
+    }
+  }];
+
+  // Parent size is set by its child's positions,
+  // so create ghost node to fix parent position
+  var ghostNode = {
+    data: {
+      id: nodeIds++,
+      parent: parentNode[0].data.id
+    },
+    classes: 'ghost',
+    renderedPosition: {
+      x: 0,
+      y: -10
+    }
+  };
+  parentNode.push(ghostNode);
+
+  // Set child node
+  var nodeSpacement = 0;
+  var nodeHeight = -33;
+  while (nodeDataWriter.nEntradas-- > 0) {
+    var childNode = {
+      group: "nodes",
+      data: {
+        id: nodeIds++,
+        parent: parentNode[0].data.id
+      },
+      renderedPosition: {
+        x: nodeSpacement,
+        y: nodeHeight
+        }
+      };
+
+      nodeSpacement += 25;      
+      parentNode.push(childNode);
+  }
+
+  cy.add(parentNode);
+
+  // lock child nodes
+  for (var i = 1; i < parentNode.length; i++) {
+    cy.$("#" + parentNode[i].data.id)
+      .on('grab', function(){ this.ungrabify(); })
+      .on('free', function(){ this.grabify(); });
+  }
+  
+  // Stop the page from refreshing after btn click
+  return false;
 }
