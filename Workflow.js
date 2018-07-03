@@ -91,7 +91,7 @@ var eh = cy.edgehandles();
 // WorkflowManager //
 
 // Add Data Reader
-var data;
+var data; 
 var nodeIds = 0;
 function onFileSelected(event) {
   data = new DataReader(event); 
