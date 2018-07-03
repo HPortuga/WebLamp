@@ -239,7 +239,6 @@ addWriter.onclick = function() {
     nEntradas: document.getElementById("nEntradasWriter").value
   };
 
-  // [0] = parent node; [>0] = child nodes
   var parentNode = [{
     group: "nodes",
     data: {
@@ -248,8 +247,6 @@ addWriter.onclick = function() {
     }
   }];
 
-  // Parent size is set by its child's positions,
-  // so create ghost node to fix parent position
   var ghostNode = {
     data: {
       id: nodeIds++,
@@ -263,7 +260,6 @@ addWriter.onclick = function() {
   };
   parentNode.push(ghostNode);
 
-  // Set child node
   var nodeSpacement = 0;
   var nodeHeight = -33;
   while (nodeDataWriter.nEntradas-- > 0) {
@@ -285,13 +281,11 @@ addWriter.onclick = function() {
 
   cy.add(parentNode);
 
-  // lock child nodes
   for (var i = 1; i < parentNode.length; i++) {
     cy.$("#" + parentNode[i].data.id)
       .on('grab', function(){ this.ungrabify(); })
       .on('free', function(){ this.grabify(); });
   }
   
-  // Stop the page from refreshing after btn click
   return false;
 }
