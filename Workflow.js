@@ -86,7 +86,79 @@ var cy = cytoscape({
 
 var eh = cy.edgehandles();
 
+// Adds child nodes to parent
+function addChildNodes(node) {
+  // Add input nodes
+  var nodeSpacement = 0;
+  while (node[0].info.nEntradas-- > 0) {
+    console.log('test');
+    var childNode = {
+      group: "nodes",
+      data: {
+        id: nodeIds++,
+        parent: node[0].data.id
+      },
+      renderedPosition: {
+        x: nodeSpacement,
+        y: -node[0].info.height
+      }
+    };
 
+    nodeSpacement += 25;      
+    node.push(childNode);
+  }
+
+  // Add output nodes
+  var nodeSpacement = 0;
+  while (node[0].info.nSaidas-- > 0) {
+    var childNode = {
+      group: "nodes",
+      data: {
+        id: nodeIds++,
+        parent: node[0].data.id
+      },
+      renderedPosition: {
+        x: nodeSpacement,
+        y: node[0].info.height
+      }
+    };
+
+    nodeSpacement += 25;      
+    node.push(childNode);
+  }
+};
+
+// Adds node to workflow
+function addNode(node) {
+  if (node[0].info.nEntradas == 0 || node[0].info.nSaidas == 0) {  // dataReader || dataWriter
+    // Parent size is set by its child's positions,
+    // so create ghost node to fix parent position
+    var height = 10;
+    var ghostNode = {
+      data: {
+        id: nodeIds++,
+        parent: node[0].data.id
+      },
+      classes: 'ghost',
+      renderedPosition: {
+        x: 0,
+        y: (node[0].info.nEntradas == 0 ? height : -height)        
+      }
+    };
+
+    node.push(ghostNode);
+  }
+
+  addChildNodes(node);
+  cy.add(node);
+
+  // lock child nodes
+  for (var i = 1; i < node.length; i++) {
+    cy.$("#" + node[i].data.id)
+      .on('grab', function(){ this.ungrabify(); })
+      .on('free', function(){ this.grabify(); });
+  }
+};
 
 // WorkflowManager //
 
@@ -99,66 +171,22 @@ function onFileSelected(event) {
 
 var btn = document.getElementById("addReader");
 btn.onclick = function() {
-  var nodeDataReader = {
-    nome: document.getElementById("readerName").value,
-    nSaidas: document.getElementById("nSaidasReader").value,
-    data: data
-  };
-
-  // [0] = parent node; [>0] = child nodes
   var parentNode = [{
     group: "nodes",
     data: {
       id: nodeIds++,
-      name: nodeDataReader.nome,
-      output: nodeDataReader.data.matriz
+      name: document.getElementById("readerName").value
+    },
+    info: {
+      nEntradas: 0,
+      nSaidas: document.getElementById("nSaidasReader").value,
+      contents: data,
+      height: 40
     }
   }];
 
-  // Parent size is set by its child's positions,
-  // so create ghost node to fix parent position
-  var ghostNode = {
-    data: {
-      id: nodeIds++,
-      parent: parentNode[0].data.id
-    },
-    classes: 'ghost',
-    renderedPosition: {
-      x: 0,
-      y: 10
-    }
-  };
-  parentNode.push(ghostNode);
+  addNode(parentNode);
 
-  // Set child node
-  var nodeSpacement = 0;
-  var nodeHeight = 33;
-  while (nodeDataReader.nSaidas-- > 0) {
-    var childNode = {
-      group: "nodes",
-      data: {
-        id: nodeIds++,
-        parent: parentNode[0].data.id
-      },
-      renderedPosition: {
-        x: nodeSpacement,
-        y: nodeHeight
-        }
-      };
-
-      nodeSpacement += 25;      
-      parentNode.push(childNode);
-  }
-
-  cy.add(parentNode);
-
-  // lock child nodes
-  for (var i = 1; i < parentNode.length; i++) {
-    cy.$("#" + parentNode[i].data.id)
-      .on('grab', function(){ this.ungrabify(); })
-      .on('free', function(){ this.grabify(); });
-  }
-  
   // Stop the page from refreshing after btn click
   return false;
 }
@@ -166,126 +194,41 @@ btn.onclick = function() {
 // Add Data Filter
 var addFilter = document.getElementById("addFilter");
 addFilter.onclick = function() {
-  var nodeDataFilter = {
-    nome: document.getElementById("filterName").value,
-    nEntradas: document.getElementById("nEntradasFilter").value,
-    nSaidas: document.getElementById("nSaidasFilter").value
-  };
-
   var parentNode = [{
     group: "nodes",
     data: {
       id: nodeIds++,
-      name: nodeDataFilter.nome
+      name: document.getElementById("filterName").value,
+    },
+    info: {
+      nEntradas: document.getElementById("nEntradasFilter").value,
+      nSaidas: document.getElementById("nSaidasFilter").value,
+      height: 20
     }
   }];
 
-  // Input nodes
-  var nodeSpacement = 0;
-  var nodeHeight = -33;
-  while (nodeDataFilter.nEntradas-- > 0) {
-    var childNode = {
-      group: "nodes",
-      data: {
-        id: nodeIds++,
-        parent: parentNode[0].data.id
-      },
-      renderedPosition: {
-        x: nodeSpacement,
-        y: nodeHeight
-        }
-      };
-
-      nodeSpacement += 25;      
-      parentNode.push(childNode);
-  }
-
-  // Output nodes
-  nodeSpacement = 0;
-  nodeHeight = 33;
-  while (nodeDataFilter.nSaidas-- > 0) {
-    var childNode = {
-      group: "nodes",
-      data: {
-        id: nodeIds++,
-        parent: parentNode[0].data.id
-      },
-      renderedPosition: {
-        x: nodeSpacement,
-        y: nodeHeight
-        }
-      };
-
-      nodeSpacement += 25;      
-      parentNode.push(childNode);
-  }
-
-  cy.add(parentNode);
-  for (var i = 1; i < parentNode.length; i++) {
-    cy.$("#" + parentNode[i].data.id)
-      .on('grab', function(){ this.ungrabify(); })
-      .on('free', function(){ this.grabify(); });
-  }
+  addNode(parentNode);
 
   return false;
 }
 
-
 // Add Data Writer
 var addWriter = document.getElementById("addWriter");
 addWriter.onclick = function() {
-  var nodeDataWriter = {
-    nome: document.getElementById("writerName").value,
-    nEntradas: document.getElementById("nEntradasWriter").value
-  };
-
   var parentNode = [{
     group: "nodes",
     data: {
       id: nodeIds++,
-      name: nodeDataWriter.nome
+      name: document.getElementById("writerName").value,
+    },
+    info: {
+      nEntradas: document.getElementById("nEntradasWriter").value,
+      nSaidas: 0,
+      height: 40
     }
   }];
 
-  var ghostNode = {
-    data: {
-      id: nodeIds++,
-      parent: parentNode[0].data.id
-    },
-    classes: 'ghost',
-    renderedPosition: {
-      x: 0,
-      y: -10
-    }
-  };
-  parentNode.push(ghostNode);
+  addNode(parentNode);
 
-  var nodeSpacement = 0;
-  var nodeHeight = -33;
-  while (nodeDataWriter.nEntradas-- > 0) {
-    var childNode = {
-      group: "nodes",
-      data: {
-        id: nodeIds++,
-        parent: parentNode[0].data.id
-      },
-      renderedPosition: {
-        x: nodeSpacement,
-        y: nodeHeight
-        }
-      };
-
-      nodeSpacement += 25;      
-      parentNode.push(childNode);
-  }
-
-  cy.add(parentNode);
-
-  for (var i = 1; i < parentNode.length; i++) {
-    cy.$("#" + parentNode[i].data.id)
-      .on('grab', function(){ this.ungrabify(); })
-      .on('free', function(){ this.grabify(); });
-  }
-  
   return false;
 }
