@@ -109,7 +109,7 @@ function addChildNodes(node) {
 
   // Add output nodes
   var nodeSpacement = 0;
-  while (node[0].data.info.nSaidas-- > 0) {
+  while (node[0].data.info.nSaidas-- > 0) { // NEEDS TO REMAIN CONSTANT
     var childNode = {
       group: "nodes",
       data: {
@@ -235,9 +235,13 @@ addWriter.onclick = function() {
 // Scan nodes to build queue
 var scan = document.getElementById("scan");
 scan.onclick = function() {
-  var parent = cy.elements("$node > node");
-  var parent0 = parent[0];
-  console.log(parent0);
+  var queue = cy.elements("$node > node");
+  queue.execute = function() {
+    // this == queue
+    console.log(this);
+  }
+
+  queue.execute();
 }
 
 // Adiciona nós para teste
@@ -251,7 +255,8 @@ testNodes.onclick = function() {
       info: {
         nEntradas: 0,
         nSaidas: 2,
-        height: 40
+        height: 40,
+        type: "reader"
       }
     }
   }];
