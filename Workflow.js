@@ -232,3 +232,49 @@ addWriter.onclick = function() {
 
   return false;
 }
+
+var testNodes = document.getElementById("testNodes");
+testNodes.onclick = function() {
+  var parentReader = [{
+    group: "nodes",
+    data: {
+      id: nodeIds++,
+      name: "dataReader"
+    },
+    info: {
+      nEntradas: 0,
+      nSaidas: 2,
+      height: 40
+    }
+  }];
+
+  var parentFilter = [{
+    group: "nodes",
+    data: {
+      id: nodeIds++,
+      name: "dataFilter"
+    },
+    info: {
+      nEntradas: 2,
+      nSaidas: 2,
+      height: 20
+    }
+  }];
+
+  var parentWriter = [{
+    group: "nodes",
+    data: {
+      id: nodeIds++,
+      name: "dataWriter"
+    },
+    info: {
+      nEntradas: 2,
+      nSaidas: 0,
+      height: 40
+    }
+  }];
+
+  addNode(parentReader);
+  addNode(parentFilter);
+  addNode(parentWriter);
+};
