@@ -90,7 +90,8 @@ var eh = cy.edgehandles();
 function addChildNodes(node) {
   // Add input nodes
   var nodeSpacement = 0;
-  while (node[0].data.info.nEntradas-- > 0) {
+  var nEntradas = node[0].data.info.nEntradas;
+  while (nEntradas-- > 0) {
     var childNode = {
       group: "nodes",
       data: {
@@ -109,7 +110,8 @@ function addChildNodes(node) {
 
   // Add output nodes
   var nodeSpacement = 0;
-  while (node[0].data.info.nSaidas-- > 0) { // NEEDS TO REMAIN CONSTANT
+  var nSaidas = node[0].data.info.nSaidas;
+  while (nSaidas-- > 0) { // NEEDS TO REMAIN CONSTANT
     var childNode = {
       group: "nodes",
       data: {
@@ -236,10 +238,37 @@ addWriter.onclick = function() {
 var scan = document.getElementById("scan");
 scan.onclick = function() {
   // Add parent nodes to queue
-  var queue = cy.elements("$node > node");
+  var nodes = cy.elements("$node > node");
+
+  // nodes (object) => queue (array)
+  var queue = new Array();
+  for (var i = 0; i < nodes.length; i++)
+    queue.push(nodes[i]);
+  
   queue.execute = function() {
     // this == queue
-    console.log(this);
+    console.log("Nodes: " + this);
+    var readyNode;
+    var i = 0;
+    while (i <= 2) {  // this.length
+      var node = this[i];
+
+      // Check dependencies
+      if (node._private.data.info.nEntradas > 0) {
+        console.log("Tem dependencias");
+        console.log(node);
+        //continue;
+      }
+      else {
+        console.log("Não tem dependencias");
+        readyNode = this.splice(i,1);
+        console.log("Ready Node: " + readyNode);
+      }
+
+      console.log(this);
+
+      i++;
+    }
   }
 
   queue.execute();
