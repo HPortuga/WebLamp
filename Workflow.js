@@ -174,13 +174,13 @@ btn.onclick = function() {
     group: "nodes",
     data: {
       id: nodeIds++,
-      name: document.getElementById("readerName").value
-    },
-    info: {
-      nEntradas: 0,
-      nSaidas: document.getElementById("nSaidasReader").value,
-      contents: data,
-      height: 40
+      name: document.getElementById("readerName").value,
+      info: {
+        nEntradas: 0,
+        nSaidas: document.getElementById("nSaidasReader").value,
+        contents: data,
+        height: 40
+      }
     }
   }];
 
@@ -198,11 +198,11 @@ addFilter.onclick = function() {
     data: {
       id: nodeIds++,
       name: document.getElementById("filterName").value,
-    },
-    info: {
-      nEntradas: document.getElementById("nEntradasFilter").value,
-      nSaidas: document.getElementById("nSaidasFilter").value,
-      height: 20
+      info: {
+        nEntradas: document.getElementById("nEntradasFilter").value,
+        nSaidas: document.getElementById("nSaidasFilter").value,
+        height: 20
+      }
     }
   }];
 
@@ -219,11 +219,11 @@ addWriter.onclick = function() {
     data: {
       id: nodeIds++,
       name: document.getElementById("writerName").value,
-    },
-    info: {
-      nEntradas: document.getElementById("nEntradasWriter").value,
-      nSaidas: 0,
-      height: 40
+      info: {
+        nEntradas: document.getElementById("nEntradasWriter").value,
+        nSaidas: 0,
+        height: 40
+      }
     }
   }];
 
@@ -235,6 +235,7 @@ addWriter.onclick = function() {
 // Scan nodes to build queue
 var scan = document.getElementById("scan");
 scan.onclick = function() {
+  // Add parent nodes to queue
   var queue = cy.elements("$node > node");
   queue.execute = function() {
     // this == queue
