@@ -90,8 +90,7 @@ var eh = cy.edgehandles();
 function addChildNodes(node) {
   // Add input nodes
   var nodeSpacement = 0;
-  while (node[0].info.nEntradas-- > 0) {
-    console.log('test');
+  while (node[0].data.info.nEntradas-- > 0) {
     var childNode = {
       group: "nodes",
       data: {
@@ -100,7 +99,7 @@ function addChildNodes(node) {
       },
       renderedPosition: {
         x: nodeSpacement,
-        y: -node[0].info.height
+        y: -node[0].data.info.height
       }
     };
 
@@ -110,7 +109,7 @@ function addChildNodes(node) {
 
   // Add output nodes
   var nodeSpacement = 0;
-  while (node[0].info.nSaidas-- > 0) {
+  while (node[0].data.info.nSaidas-- > 0) {
     var childNode = {
       group: "nodes",
       data: {
@@ -119,7 +118,7 @@ function addChildNodes(node) {
       },
       renderedPosition: {
         x: nodeSpacement,
-        y: node[0].info.height
+        y: node[0].data.info.height
       }
     };
 
@@ -130,7 +129,7 @@ function addChildNodes(node) {
 
 // Adds node to workflow
 function addNode(node) {
-  if (node[0].info.nEntradas == 0 || node[0].info.nSaidas == 0) {  // dataReader || dataWriter
+  if (node[0].data.info.nEntradas == 0 || node[0].data.info.nSaidas == 0) {  // dataReader || dataWriter
     // Parent size is set by its child's positions,
     // so create ghost node to fix parent position
     var height = 10;
@@ -142,7 +141,7 @@ function addNode(node) {
       classes: 'ghost',
       renderedPosition: {
         x: 0,
-        y: (node[0].info.nEntradas == 0 ? height : -height)        
+        y: (node[0].data.info.nEntradas == 0 ? height : -height)        
       }
     };
 
@@ -233,6 +232,14 @@ addWriter.onclick = function() {
   return false;
 }
 
+// Scan nodes to build queue
+var scan = document.getElementById("scan");
+scan.onclick = function() {
+  var parent = cy.elements("$node > node");
+  var parent0 = parent[0];
+  console.log(parent0);
+}
+
 // Adiciona nós para teste
 var testNodes = document.getElementById("testNodes");
 testNodes.onclick = function() {
@@ -240,12 +247,12 @@ testNodes.onclick = function() {
     group: "nodes",
     data: {
       id: nodeIds++,
-      name: "dataReader"
-    },
-    info: {
-      nEntradas: 0,
-      nSaidas: 2,
-      height: 40
+      name: "dataReader",
+      info: {
+        nEntradas: 0,
+        nSaidas: 2,
+        height: 40
+      }
     }
   }];
 
@@ -253,12 +260,12 @@ testNodes.onclick = function() {
     group: "nodes",
     data: {
       id: nodeIds++,
-      name: "dataFilter"
-    },
-    info: {
-      nEntradas: 2,
-      nSaidas: 2,
-      height: 20
+      name: "dataFilter",
+      info: {
+        nEntradas: 2,
+        nSaidas: 2,
+        height: 20
+      }
     }
   }];
 
@@ -266,12 +273,12 @@ testNodes.onclick = function() {
     group: "nodes",
     data: {
       id: nodeIds++,
-      name: "dataWriter"
-    },
-    info: {
-      nEntradas: 2,
-      nSaidas: 0,
-      height: 40
+      name: "dataWriter",
+      info: {
+        nEntradas: 2,
+        nSaidas: 0,
+        height: 40
+      }
     }
   }];
 
