@@ -233,6 +233,7 @@ addWriter.onclick = function() {
   return false;
 }
 
+// Adiciona nós para teste
 var testNodes = document.getElementById("testNodes");
 testNodes.onclick = function() {
   var parentReader = [{
@@ -277,4 +278,40 @@ testNodes.onclick = function() {
   addNode(parentReader);
   addNode(parentFilter);
   addNode(parentWriter);
+
+  // Adiciona arestas aos nós
+  cy.add([
+    {
+      group: "edges",
+      data: {
+        id: nodeIds++,
+        source: parentReader[2].data.id,
+        target: parentFilter[1].data.id
+      }
+    },
+    {
+      group: "edges",
+      data: {
+        id: nodeIds++,
+        source: parentReader[3].data.id,
+        target: parentFilter[2].data.id
+      }
+    },
+    {
+      group: "edges",
+      data: {
+        id: nodeIds++,
+        source: parentFilter[3].data.id,
+        target:parentWriter[2].data.id
+      }
+    },
+    {
+      group: "edges",
+      data: {
+        id: nodeIds++,
+        source: parentFilter[4].data.id,
+        target:parentWriter[3].data.id
+      }
+    }
+  ]);
 };
