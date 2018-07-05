@@ -293,6 +293,11 @@ scan.onclick = function() {
           tgtParent._private.data.info.input = parentOutput;
           console.log(tgtParent);
 
+          var p = new LampVis(2);
+          p.setInput(tgtParent._private.data.info.input);
+          p.execute();
+          var output = p.getOutput();
+          console.log(output);
         }
 
 
