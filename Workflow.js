@@ -284,7 +284,15 @@ scan.onclick = function() {
           
           // Get parent's output
           var parentOutput = srcParent._private.data.info.output;
-          console.log(parentOutput);
+
+          // Find target's parent
+          var tgtParent = cy.getElementById(flow.target);
+          tgtParent = tgtParent._private.data.parent;
+          tgtParent = cy.getElementById(tgtParent);
+          // Set target's input
+          tgtParent._private.data.info.input = parentOutput;
+          console.log(tgtParent);
+
         }
 
 
