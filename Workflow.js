@@ -270,40 +270,25 @@ scan.onclick = function() {
         // Writer must print projection
 
         if (readyNode[0]._private.data.info.tipo == "reader") {
-          console.log("OI");
-          // Get children
+          // Get edge flow
           var childNode = readyNode[0]._private.children[1];
           var flow = {
             source: childNode._private.edges[0]._private.data.source,
             target: childNode._private.edges[0]._private.data.target
           };
-          console.log(flow);
+
+          // Find source's parent
+          var srcParent = cy.$("#" + flow.source);
+          srcParent = srcParent[0]._private.data.parent;
+          srcParent = cy.getElementById(srcParent);
+          
+          // Get parent's output
+          var parentOutput = srcParent._private.data.info.output;
+          console.log(parentOutput);
         }
 
 
         
-        // // Reader is ready before entering queue
-        // if (readyNode._private.data.info.tipo != "reader") {
-        //   if (readyNode._private.data.info.tipo == "filter") {
-        //     // get input
-        //     var p = new LampVis(2);
-        //     console.log(p);
-
-        //     // project
-
-        //     // set output
-
-        //     // dependencies--
-
-        //   }
-        //   else {
-        //     // get input
-
-        //     // write
-
-        //     // dependencies--
-        //   }
-        // }
       }
 
       i++;
