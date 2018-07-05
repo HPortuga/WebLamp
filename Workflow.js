@@ -180,8 +180,10 @@ btn.onclick = function() {
       info: {
         nEntradas: 0,
         nSaidas: document.getElementById("nSaidasReader").value,
-        contents: data,
-        height: 40
+        output: data,
+        height: 40,
+        tipo: "reader",
+        dependencias: 0
       }
     }
   }];
@@ -203,7 +205,9 @@ addFilter.onclick = function() {
       info: {
         nEntradas: document.getElementById("nEntradasFilter").value,
         nSaidas: document.getElementById("nSaidasFilter").value,
-        height: 20
+        height: 20,
+        tipo: "filter",
+        dependencias: document.getElementById("nEntradasFilter").value
       }
     }
   }];
@@ -251,7 +255,7 @@ scan.onclick = function() {
     var i = 0;
     while (i <= 2) {  // this.length
       var node = this[i];
-
+      console.log(node);
       // Check dependencies
       if (node._private.data.info.dependencias > 0) {
         console.log("Tem dependencias");
@@ -260,26 +264,46 @@ scan.onclick = function() {
       else {
         console.log("Não tem dependencias");
         readyNode = this.splice(i,1);
-        
-        // Reader is ready before entering queue
-        if (readyNode._private.data.info.tipo != "reader") {
-          if (readyNode._private.data.info.tipo == "filter") {
-            // get input
+        console.log(readyNode);
+        // Reader must send output to filter
+        // Filter must project && send output to writer
+        // Writer must print projection
 
-            // project
-
-            // set output
-
-            // dependencies--
-          }
-          else {
-            // get input
-
-            // write
-
-            // dependencies--
-          }
+        if (readyNode[0]._private.data.info.tipo == "reader") {
+          console.log("OI");
+          // Get children
+          var childNode = readyNode[0]._private.children[1];
+          var flow = {
+            source: childNode._private.edges[0]._private.data.source,
+            target: childNode._private.edges[0]._private.data.target
+          };
+          console.log(flow);
         }
+
+
+        
+        // // Reader is ready before entering queue
+        // if (readyNode._private.data.info.tipo != "reader") {
+        //   if (readyNode._private.data.info.tipo == "filter") {
+        //     // get input
+        //     var p = new LampVis(2);
+        //     console.log(p);
+
+        //     // project
+
+        //     // set output
+
+        //     // dependencies--
+
+        //   }
+        //   else {
+        //     // get input
+
+        //     // write
+
+        //     // dependencies--
+        //   }
+        // }
       }
 
       i++;
