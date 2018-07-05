@@ -253,13 +253,13 @@ scan.onclick = function() {
     // this == queue
     var readyNode;
     var i = 0;
-    while (i <= 2) {  // this.length
+    while (this.length) {  // this.length
       var node = this[i];
       console.log(node);
       // Check dependencies
       if (node._private.data.info.dependencias > 0) {
         console.log("Tem dependencias");
-        //continue;
+        continue;
       }
       else {
         console.log("Não tem dependencias");
@@ -291,6 +291,7 @@ scan.onclick = function() {
           tgtParent = cy.getElementById(tgtParent);
           // Set target's input
           tgtParent._private.data.info.input = parentOutput;
+          tgtParent._private.data.info.dependencias--;
           console.log(tgtParent);
 
           var p = new LampVis(2);
