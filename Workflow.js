@@ -247,25 +247,40 @@ scan.onclick = function() {
   
   queue.execute = function() {
     // this == queue
-    console.log("Nodes: " + this);
     var readyNode;
     var i = 0;
     while (i <= 2) {  // this.length
       var node = this[i];
 
       // Check dependencies
-      if (node._private.data.info.nEntradas > 0) {
+      if (node._private.data.info.dependencias > 0) {
         console.log("Tem dependencias");
-        console.log(node);
         //continue;
       }
       else {
         console.log("Não tem dependencias");
         readyNode = this.splice(i,1);
-        console.log("Ready Node: " + readyNode);
-      }
+        
+        // Reader is ready before entering queue
+        if (readyNode._private.data.info.tipo != "reader") {
+          if (readyNode._private.data.info.tipo == "filter") {
+            // get input
 
-      console.log(this);
+            // project
+
+            // set output
+
+            // dependencies--
+          }
+          else {
+            // get input
+
+            // write
+
+            // dependencies--
+          }
+        }
+      }
 
       i++;
     }
@@ -286,7 +301,8 @@ testNodes.onclick = function() {
         nEntradas: 0,
         nSaidas: 2,
         height: 40,
-        type: "reader"
+        tipo: "reader",
+        dependencias: 0
       }
     }
   }];
@@ -299,7 +315,9 @@ testNodes.onclick = function() {
       info: {
         nEntradas: 2,
         nSaidas: 2,
-        height: 20
+        height: 20,
+        tipo: "filter",
+        dependencias: 2
       }
     }
   }];
@@ -312,7 +330,9 @@ testNodes.onclick = function() {
       info: {
         nEntradas: 2,
         nSaidas: 0,
-        height: 40
+        height: 40,
+        tipo: "writer",
+        dependencias: 2
       }
     }
   }];
