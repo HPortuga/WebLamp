@@ -228,7 +228,9 @@ addWriter.onclick = function() {
       info: {
         nEntradas: document.getElementById("nEntradasWriter").value,
         nSaidas: 0,
-        height: 40
+        height: 40,
+        tipo: "writer",
+        dependencias: document.getElementById("nEntradasWriter").value
       }
     }
   }];
@@ -239,12 +241,18 @@ addWriter.onclick = function() {
 }
 function test(queue) {
   // this == queue
-  console.log(queue);
   var readyNode;
   var i = 0;
   while (queue.length) {  // this.length
+
+    if (i > queue.length) i = 0;  // MAYBE FIXED THIS
+
+    console.log("this is queue inside test");
+    for (var c = 0; c < queue.length; c++) {
+      console.log(queue[c]);
+    }
+
     var node = queue[i];
-    //console.log(node);
     // Check dependencies
     if (node._private.data.info.dependencias > 0) {
       console.log("Tem dependencias");
@@ -252,17 +260,18 @@ function test(queue) {
     }
     else {
       console.log("Não tem dependencias");
-      console.log("H");
-      console.log(queue);
       readyNode = queue.splice(i,1);
-      console.log(queue);console.log("H");
-      //console.log(readyNode);
+      i--;  // Come back one step after deletion
+
+      console.log("DELETING...")
+      console.log(readyNode)
       // Reader must send output to filter
       // Filter must project && send output to writer
       // Writer must print projection
-      console.log(queue);
-      console.log("Tipo: " + readyNode[0]._private.data.info.tipo);
+
       if (readyNode[0]._private.data.info.tipo == "reader") {
+        console.log("READER");
+
         // Get edge flow
         var childNode = readyNode[0]._private.children[1];
         var flow = {
@@ -293,7 +302,14 @@ function test(queue) {
         var output = p.getOutput();
         //console.log(output);
       }
+
+      else if (readyNode[0]._private.data.info.tipo == "filter") {
+        console.log("FILTER");
+      }
       
+      else if (readyNode[0]._private.data.info.tipo == "writer") {
+        console.log("WRITER");
+      }
     }
 
     i++;
@@ -304,6 +320,7 @@ var scan = document.getElementById("scan");
 scan.onclick = function() {
   // Add parent nodes to queue
   var nodes = cy.elements("$node > node");
+  console.log("NODES");
   console.log(nodes);
 
   // Object => Array
@@ -315,12 +332,13 @@ scan.onclick = function() {
     len--;
     i++;
   }
-  console.log(queue);
-  
+
   console.log("QUEUE");
   console.log(queue);
-  test(queue);
+  // Correct so far
 
+  // Breaks here
+  test(queue);
 }
 
 // Adiciona nós para teste
