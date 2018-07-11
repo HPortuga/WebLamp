@@ -228,7 +228,9 @@ addWriter.onclick = function() {
       info: {
         nEntradas: document.getElementById("nEntradasWriter").value,
         nSaidas: 0,
-        height: 40
+        height: 40,
+        tipo: "writer",
+        dependencias: document.getElementById("nEntradasWriter").value
       }
     }
   }];
@@ -237,109 +239,106 @@ addWriter.onclick = function() {
 
   return false;
 }
+function test(queue) {
+  // this == queue
+  var readyNode;
+  var i = 0;
+  while (queue.length) {  // this.length
 
+    if (i > queue.length) i = 0;  // MAYBE FIXED THIS
+
+    console.log("this is queue inside test");
+    for (var c = 0; c < queue.length; c++) {
+      console.log(queue[c]);
+    }
+
+    var node = queue[i];
+    // Check dependencies
+    if (node._private.data.info.dependencias > 0) {
+      console.log("Tem dependencias");
+      continue;
+    }
+    else {
+      console.log("Não tem dependencias");
+      readyNode = queue.splice(i,1);
+      i--;  // Come back one step after deletion
+
+      console.log("DELETING...")
+      console.log(readyNode)
+      // Reader must send output to filter
+      // Filter must project && send output to writer
+      // Writer must print projection
+
+      if (readyNode[0]._private.data.info.tipo == "reader") {
+        console.log("READER");
+
+        // Get edge flow
+        var childNode = readyNode[0]._private.children[1];
+        var flow = {
+          source: childNode._private.edges[0]._private.data.source,
+          target: childNode._private.edges[0]._private.data.target
+        };
+
+        // Find source's parent
+        var srcParent = cy.$("#" + flow.source);
+        srcParent = srcParent[0]._private.data.parent;
+        srcParent = cy.getElementById(srcParent);
+        
+        // Get parent's output
+        var parentOutput = srcParent._private.data.info.output;
+
+        // Find target's parent
+        var tgtParent = cy.getElementById(flow.target);
+        tgtParent = tgtParent._private.data.parent;
+        tgtParent = cy.getElementById(tgtParent);
+        // Set target's input
+        tgtParent._private.data.info.input = parentOutput;
+        tgtParent._private.data.info.dependencias--;
+        //console.log(tgtParent);
+
+        var p = new LampVis(2);
+        p.setInput(tgtParent._private.data.info.input);
+        p.execute();
+        var output = p.getOutput();
+        //console.log(output);
+      }
+
+      else if (readyNode[0]._private.data.info.tipo == "filter") {
+        console.log("FILTER");
+      }
+      
+      else if (readyNode[0]._private.data.info.tipo == "writer") {
+        console.log("WRITER");
+      }
+    }
+
+    i++;
+  }
+}
 // Scan nodes to build queue
 var scan = document.getElementById("scan");
 scan.onclick = function() {
   // Add parent nodes to queue
   var nodes = cy.elements("$node > node");
+  console.log("NODES");
+  console.log(nodes);
 
-  // nodes (object) => queue (array)
+  // Object => Array
   var queue = new Array();
-  for (var i = 0; i < nodes.length; i++) {
-    queue.push(nodes[i]);
+  var i = 0;
+  var len = nodes.length;
+  while (len > 0) {
+    queue[i] = nodes[i];
+    len--;
+    i++;
   }
 
+  console.log("QUEUE");
   console.log(queue);
+  // Correct so far
 
-  // This breaks queue
-  queue.execute = function() {
-    // this == queue
-    var readyNode;
-    var i = -1;
-    while (queue.length) {  // this.length
-      i++;
-      var node = queue[i];
-      console.log(node);
-      console.log(queue);
-      // Check dependencies
-      if (node[0]._private.data.info.dependencias > 0) {
-        console.log("Tem dependencias");
-        continue;
-      }
-      else {
-        console.log("Não tem dependencias");
-        console.log(queue);
-        console.log(i);
-        readyNode = queue.splice(i,1);
-        console.log("excutando " + readyNode[0]._private.data.info.tipo);
-        // Reader must send output to filter
-        // Filter must project && send output to writer
-        // Writer must print projection
-
-        if (readyNode[0]._private.data.info.tipo == "reader") {
-          // Get edge flow
-          var childNode = readyNode[0]._private.children[1];
-          var flow = {
-            source: childNode._private.edges[0]._private.data.source,
-            target: childNode._private.edges[0]._private.data.target
-          };
-
-          // Find source's parent
-          var srcParent = cy.$("#" + flow.source);
-          srcParent = srcParent[0]._private.data.parent;
-          srcParent = cy.getElementById(srcParent);
-          
-          var parentOutput = srcParent._private.data.info.output;
-
-          // Find target's parent
-          var tgtParent = cy.getElementById(flow.target);
-          tgtParent = tgtParent._private.data.parent;
-          tgtParent = cy.getElementById(tgtParent);
-
-          // Set target's input
-          tgtParent._private.data.info.input = parentOutput;
-          tgtParent._private.data.info.dependencias--;
-        }
-        else if (readyNode[0]._private.data.info.tipo == "filter") {
-          console.log("OI");
-          // Project data
-          var p = new LampVis(2);
-          p.setInput(readyNode[0]._private.data.info.input);
-          p.execute();
-          readyNode[0]._private.data.info.output = p.getOutput();
-
-          // Get edge flow
-          var childNode = readyNode[0]._private.children[1];
-          var flow = {
-            source: childNode._private.edges[0]._private.data.source,
-            target: childNode._private.edges[0]._private.data.target
-          };
-
-          // Find source's parent
-          var srcParent = cy.$("#" + flow.source);
-          console.log(srcParent);
-          srcParent = srcParent[0]._private.data.parent;
-          srcParent = cy.getElementById(srcParent);
-          
-          var parentOutput = srcParent._private.data.info.output;
-
-          // Find target's parent
-          var tgtParent = cy.getElementById(flow.target);
-          tgtParent = tgtParent._private.data.parent;
-          tgtParent = cy.getElementById(tgtParent);
-
-          // Set target's input
-          tgtParent._private.data.info.input = parentOutput;
-          tgtParent._private.data.info.dependencias--;          
-        }
-
-        
-      }
-    }
-  }
-
-  queue.execute();
+  // Breaks here
+  test(queue);
 }
 
 // Adiciona nós para teste
