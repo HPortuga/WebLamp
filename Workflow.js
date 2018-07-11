@@ -239,39 +239,25 @@ addWriter.onclick = function() {
 
   return false;
 }
-function test(queue) {
-  // this == queue
+
+// Reader must send output to filter
+// Filter must project && send output to writer
+// Writer must print projection
+function execute(queue) {
   var readyNode;
   var i = 0;
-  while (queue.length) {  // this.length
+  while (queue.length) {
+    // Stops index from exceding than queue's length
+    if (i > queue.length) i = 0;
 
-    if (i > queue.length) i = 0;  // MAYBE FIXED THIS
-
-    console.log("this is queue inside test");
-    for (var c = 0; c < queue.length; c++) {
-      console.log(queue[c]);
-    }
-
-    var node = queue[i];
     // Check dependencies
-    if (node._private.data.info.dependencias > 0) {
-      console.log("Tem dependencias");
-      continue;
-    }
+    var node = queue[i];
+    if (node._private.data.info.dependencias > 0) continue;
     else {
-      console.log("Não tem dependencias");
       readyNode = queue.splice(i,1);
       i--;  // Come back one step after deletion
 
-      console.log("DELETING...")
-      console.log(readyNode)
-      // Reader must send output to filter
-      // Filter must project && send output to writer
-      // Writer must print projection
-
       if (readyNode[0]._private.data.info.tipo == "reader") {
-        console.log("READER");
-
         // Get edge flow
         var childNode = readyNode[0]._private.children[1];
         var flow = {
@@ -291,37 +277,66 @@ function test(queue) {
         var tgtParent = cy.getElementById(flow.target);
         tgtParent = tgtParent._private.data.parent;
         tgtParent = cy.getElementById(tgtParent);
+
         // Set target's input
         tgtParent._private.data.info.input = parentOutput;
         tgtParent._private.data.info.dependencias--;
-        //console.log(tgtParent);
-
-        var p = new LampVis(2);
-        p.setInput(tgtParent._private.data.info.input);
-        p.execute();
-        var output = p.getOutput();
-        //console.log(output);
       }
 
       else if (readyNode[0]._private.data.info.tipo == "filter") {
-        console.log("FILTER");
+        // Project data
+        var p = new LampVis(2);
+        p.setInput(readyNode[0]._private.data.info.input);
+        p.execute();
+        var output = p.getOutput();
+
+        // Get edge flow
+        var childNode = readyNode[0]._private.children[1];
+        var flow = {
+          source: childNode._private.edges[0]._private.data.source,
+          target: childNode._private.edges[0]._private.data.target
+        };
+
+        // Find source's parent
+        var srcParent = cy.$("#" + flow.source);
+        srcParent = srcParent[0]._private.data.parent;
+        srcParent = cy.getElementById(srcParent);
+        
+        // Get parent's output
+        var parentOutput = output
+
+        // Find target's parent
+        var tgtParent = cy.getElementById(flow.target);
+        tgtParent = tgtParent._private.data.parent;
+        tgtParent = cy.getElementById(tgtParent);
+
+        // Set target's input
+        tgtParent._private.data.info.input = parentOutput;
+        console.log(tgtParent)
+        tgtParent._private.data.info.dependencias--;
       }
       
       else if (readyNode[0]._private.data.info.tipo == "writer") {
-        console.log("WRITER");
+        console.log(readyNode[0]._private.data.info.input)
+        var writer = new DataWriter(readyNode[0]._private.data.info.input);
+        var csvOutput = writer.gerarCsv();
+        localStorage.csvOutput = csvOutput;
+        //window.open(csvOutput);
+        var scatterWindow = window.open("ScatterWindow.html")
+
       }
     }
 
     i++;
   }
+
+  console.log("TERMINADO");
 }
 // Scan nodes to build queue
 var scan = document.getElementById("scan");
 scan.onclick = function() {
   // Add parent nodes to queue
   var nodes = cy.elements("$node > node");
-  console.log("NODES");
-  console.log(nodes);
 
   // Object => Array
   var queue = new Array();
@@ -333,12 +348,7 @@ scan.onclick = function() {
     i++;
   }
 
-  console.log("QUEUE");
-  console.log(queue);
-  // Correct so far
-
-  // Breaks here
-  test(queue);
+  execute(queue);
 }
 
 // Adiciona nós para teste
