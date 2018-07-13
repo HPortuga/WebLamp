@@ -321,9 +321,12 @@ function execute(queue) {
         var writer = new DataWriter(readyNode[0]._private.data.info.input);
         var csvOutput = writer.gerarCsv();
         localStorage.csvOutput = csvOutput;
-        //window.open(csvOutput);
-        var scatterWindow = window.open("ScatterWindow.html")
 
+        // Download CSV file //
+        //window.open(csvOutput);
+
+
+        var scatterWindow = window.open("ScatterWindow.html")
       }
     }
 
@@ -332,6 +335,7 @@ function execute(queue) {
 
   console.log("TERMINADO");
 }
+
 // Scan nodes to build queue
 var scan = document.getElementById("scan");
 scan.onclick = function() {
@@ -350,92 +354,3 @@ scan.onclick = function() {
 
   execute(queue);
 }
-
-// Adiciona nós para teste
-var testNodes = document.getElementById("testNodes");
-testNodes.onclick = function() {
-  var parentReader = [{
-    group: "nodes",
-    data: {
-      id: nodeIds++,
-      name: "dataReader",
-      info: {
-        nEntradas: 0,
-        nSaidas: 2,
-        height: 40,
-        tipo: "reader",
-        dependencias: 0
-      }
-    }
-  }];
-
-  var parentFilter = [{
-    group: "nodes",
-    data: {
-      id: nodeIds++,
-      name: "dataFilter",
-      info: {
-        nEntradas: 2,
-        nSaidas: 2,
-        height: 20,
-        tipo: "filter",
-        dependencias: 2
-      }
-    }
-  }];
-
-  var parentWriter = [{
-    group: "nodes",
-    data: {
-      id: nodeIds++,
-      name: "dataWriter",
-      info: {
-        nEntradas: 2,
-        nSaidas: 0,
-        height: 40,
-        tipo: "writer",
-        dependencias: 2
-      }
-    }
-  }];
-
-  addNode(parentReader);
-  addNode(parentFilter);
-  addNode(parentWriter);
-
-  // Adiciona arestas aos nós
-  cy.add([
-    {
-      group: "edges",
-      data: {
-        id: nodeIds++,
-        source: parentReader[2].data.id,
-        target: parentFilter[1].data.id
-      }
-    },
-    {
-      group: "edges",
-      data: {
-        id: nodeIds++,
-        source: parentReader[3].data.id,
-        target: parentFilter[2].data.id
-      }
-    },
-    {
-      group: "edges",
-      data: {
-        id: nodeIds++,
-        source: parentFilter[3].data.id,
-        target:parentWriter[2].data.id
-      }
-    },
-    {
-      group: "edges",
-      data: {
-        id: nodeIds++,
-        source: parentFilter[4].data.id,
-        target:parentWriter[3].data.id
-      }
-    }
-  ]);
-};
