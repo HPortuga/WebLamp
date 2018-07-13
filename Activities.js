@@ -31,11 +31,12 @@ class Activity {
 	}
 
 	// Adds child nodes to parent node
-	addChildNodes() {
+	addChildNodes(newNode) {
 		// iteration 0: input nodes ; iteration 1: output nodes
 		var childType = {
 			numChilds: this.parentNode.data.info.nEntradas,
-			iteration: 0
+			iteration: 0,
+			spacement: 0
 		}
 		
 		this.shouldAddOutput(childType)
@@ -51,18 +52,22 @@ class Activity {
 					parent: this.parentNode.data.id
 				},
 				renderedPosition: {
-					x: nodeSpacement,
+					x: childType.spacement,
 					y: childType.iteration == 0 ? -height : height 
 				}
 			};
 
-			nodeSpacement += 25;
+			childType.spacement += 25;
 			childNodes.push(child);
 
 			this.shouldAddOutput(childType);
 		}
 
-		return childNodes;
+		for (var i = 0; i < childNodes.length; i++)
+			newNode.push(childNodes[i]);
+
+		cy.add(newNode);
+		this.lockNodes(newNode);
 	}
 
 	// Chekcs if child node needs output nodes
@@ -70,6 +75,7 @@ class Activity {
 		if (childType.numChilds == 0 && childType.iteration == 0) { 
 			childType.numChilds = this.parentNode.data.info.nSaidas;
 	 		childType.iteration = 1;
+	 		childType.spacement = 0;
 	 	}
 
 	 	return childType;
@@ -90,7 +96,7 @@ class DataReader extends Activity {
 		this.setParentNode(data);
 	}
 
-	setParentNode() {
+	setParentNode(data) {
 		this.parentNode.data.name = document.getElementById("readerName").value;
 		this.parentNode.data.info = {
 			nEntradas: 0,
@@ -106,18 +112,33 @@ class DataReader extends Activity {
 		var newNode = new Array();
 		newNode.push(this.parentNode);
 		newNode.push(this.newGhostNode());
-		var childNodes = this.addChildNodes();
-		for (var i = 0; i < childNodes.length; i++)
-			newNode.push(childNodes[i]);
-
-		cy.add(newNode);
-		this.lockNodes(newNode);
+		this.addChildNodes(newNode);
 	}
 
 }
 
 class DataFilter extends Activity {
+	constructor() {
+		super("filter");
+		this.setParentNode();
+	}
 
+	setParentNode() {
+		this.parentNode.data.name = document.getElementById("filterName").value;
+		this.parentNode.data.info = {
+			nEntradas: document.getElementById("nEntradasFilter").value,
+			nSaidas: document.getElementById("nSaidasFilter").value,
+			height: 20,
+			tipo: this.type,
+			dependencias: document.getElementById("nEntradasFilter").value
+		};
+	}
+
+	createNode() {
+		var newNode = new Array();
+		newNode.push(this.parentNode);
+		this.addChildNodes(newNode);
+	}
 }
 
 class DataWriter extends Activity {

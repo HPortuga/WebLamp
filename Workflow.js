@@ -165,7 +165,6 @@ function addNode(node) {
 
 // Add Data Reader //
 // Get file's input
-var nodeIds = 0;
 var data;
 function onFileSelected(event) {
   data = new DataReaderOld(event);
@@ -183,22 +182,8 @@ btn.onclick = function() {
 // Add Data Filter
 var addFilter = document.getElementById("addFilter");
 addFilter.onclick = function() {
-  var parentNode = [{
-    group: "nodes",
-    data: {
-      id: nodeIds++,
-      name: document.getElementById("filterName").value,
-      info: {
-        nEntradas: document.getElementById("nEntradasFilter").value,
-        nSaidas: document.getElementById("nSaidasFilter").value,
-        height: 20,
-        tipo: "filter",
-        dependencias: document.getElementById("nEntradasFilter").value
-      }
-    }
-  }];
-
-  addNode(parentNode);
+  var dataFilter = new DataFilter();
+  dataFilter.createNode();
 
   return false;
 }
