@@ -191,22 +191,8 @@ addFilter.onclick = function() {
 // Add Data Writer
 var addWriter = document.getElementById("addWriter");
 addWriter.onclick = function() {
-  var parentNode = [{
-    group: "nodes",
-    data: {
-      id: nodeIds++,
-      name: document.getElementById("writerName").value,
-      info: {
-        nEntradas: document.getElementById("nEntradasWriter").value,
-        nSaidas: 0,
-        height: 40,
-        tipo: "writer",
-        dependencias: document.getElementById("nEntradasWriter").value
-      }
-    }
-  }];
-
-  addNode(parentNode);
+  var dataWriter = new DataWriter();
+  dataWriter.createNode();
 
   return false;
 }

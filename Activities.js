@@ -88,6 +88,16 @@ class Activity {
 	      	.on('free', function(){ this.grabify(); });
 	   }
 	}
+
+	createNode() {
+		var newNode = new Array();
+		newNode.push(this.parentNode);
+
+		if (this.type != "filter")
+			newNode.push(this.newGhostNode());
+
+		this.addChildNodes(newNode);
+	}
 }
 
 class DataReader extends Activity {
@@ -107,14 +117,6 @@ class DataReader extends Activity {
 			output: data
 		};
 	}
-
-	createNode() {
-		var newNode = new Array();
-		newNode.push(this.parentNode);
-		newNode.push(this.newGhostNode());
-		this.addChildNodes(newNode);
-	}
-
 }
 
 class DataFilter extends Activity {
@@ -133,14 +135,22 @@ class DataFilter extends Activity {
 			dependencias: document.getElementById("nEntradasFilter").value
 		};
 	}
-
-	createNode() {
-		var newNode = new Array();
-		newNode.push(this.parentNode);
-		this.addChildNodes(newNode);
-	}
 }
 
 class DataWriter extends Activity {
+	constructor() {
+		super("writer");
+		this.setParentNode();
+	}
 
+	setParentNode() {
+		this.parentNode.data.name = document.getElementById("writerName").value;
+		this.parentNode.data.info = {
+			nEntradas: document.getElementById("nEntradasWriter").value,
+			nSaidas: 0,
+			height: 40,
+			tipo: this.type,
+			dependencias: document.getElementById("nEntradasWriter").value
+		};
+	}
 }
