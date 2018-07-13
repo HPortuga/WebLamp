@@ -1,4 +1,4 @@
-class DataReader {
+class DataReaderOld {
 	constructor(event) {
 		var selectedFile = event.target.files[0];
 	    var reader = new FileReader();

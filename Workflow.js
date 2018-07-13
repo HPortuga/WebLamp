@@ -163,32 +163,18 @@ function addNode(node) {
 
 // WorkflowManager //
 
-// Add Data Reader
-var data; 
+// Add Data Reader //
+// Get file's input
 var nodeIds = 0;
+var data;
 function onFileSelected(event) {
-  data = new DataReader(event); 
+  data = new DataReaderOld(event);
 }
 
 var btn = document.getElementById("addReader");
 btn.onclick = function() {
-  var parentNode = [{
-    group: "nodes",
-    data: {
-      id: nodeIds++,
-      name: document.getElementById("readerName").value,
-      info: {
-        nEntradas: 0,
-        nSaidas: document.getElementById("nSaidasReader").value,
-        output: data,
-        height: 40,
-        tipo: "reader",
-        dependencias: 0
-      }
-    }
-  }];
-
-  addNode(parentNode);
+  var dataReader = new DataReader(data);
+  dataReader.createNode();
 
   // Stop the page from refreshing after btn click
   return false;
@@ -247,7 +233,7 @@ function execute(queue) {
   var readyNode;
   var i = 0;
   while (queue.length) {
-    // Stops index from exceding than queue's length
+    // Stops index from exceding queue's length
     if (i > queue.length) i = 0;
 
     // Check dependencies
@@ -318,14 +304,14 @@ function execute(queue) {
       
       else if (readyNode[0]._private.data.info.tipo == "writer") {
         console.log(readyNode[0]._private.data.info.input)
-        var writer = new DataWriter(readyNode[0]._private.data.info.input);
+        var writer = new DataWriterOld(readyNode[0]._private.data.info.input);
         var csvOutput = writer.gerarCsv();
         localStorage.csvOutput = csvOutput;
 
         // Download CSV file //
         //window.open(csvOutput);
 
-
+        // Open ScatterPlot
         var scatterWindow = window.open("ScatterWindow.html")
       }
     }

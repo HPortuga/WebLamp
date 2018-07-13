@@ -1,4 +1,4 @@
-class DataWriter {
+class DataWriterOld {
 	constructor(contents) {
 		this.contents = contents;
 	}
