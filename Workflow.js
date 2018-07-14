@@ -86,93 +86,29 @@ var cy = cytoscape({
 
 var eh = cy.edgehandles();
 
-// Adds child nodes to parent
-function addChildNodes(node) {
-  // Add input nodes
-  var nodeSpacement = 0;
-  var nEntradas = node[0].data.info.nEntradas;
-  while (nEntradas-- > 0) {
-    var childNode = {
-      group: "nodes",
-      data: {
-        id: nodeIds++,
-        parent: node[0].data.id
-      },
-      renderedPosition: {
-        x: nodeSpacement,
-        y: -node[0].data.info.height
-      }
-    };
-
-    nodeSpacement += 25;      
-    node.push(childNode);
-  }
-
-  // Add output nodes
-  var nodeSpacement = 0;
-  var nSaidas = node[0].data.info.nSaidas;
-  while (nSaidas-- > 0) { // NEEDS TO REMAIN CONSTANT
-    var childNode = {
-      group: "nodes",
-      data: {
-        id: nodeIds++,
-        parent: node[0].data.id
-      },
-      renderedPosition: {
-        x: nodeSpacement,
-        y: node[0].data.info.height
-      }
-    };
-
-    nodeSpacement += 25;      
-    node.push(childNode);
-  }
-};
-
-// Adds node to workflow
-function addNode(node) {
-  if (node[0].data.info.nEntradas == 0 || node[0].data.info.nSaidas == 0) {  // dataReader || dataWriter
-    // Parent size is set by its child's positions,
-    // so create ghost node to fix parent position
-    var height = 10;
-    var ghostNode = {
-      data: {
-        id: nodeIds++,
-        parent: node[0].data.id
-      },
-      classes: 'ghost',
-      renderedPosition: {
-        x: 0,
-        y: (node[0].data.info.nEntradas == 0 ? height : -height)        
-      }
-    };
-
-    node.push(ghostNode);
-  }
-
-  addChildNodes(node);
-  cy.add(node);
-
-  // lock child nodes
-  for (var i = 1; i < node.length; i++) {
-    cy.$("#" + node[i].data.id)
-      .on('grab', function(){ this.ungrabify(); })
-      .on('free', function(){ this.grabify(); });
-  }
-};
-
 // WorkflowManager //
 
 // Add Data Reader //
 // Get file's input
-var data;
+var contents;
 function onFileSelected(event) {
-  data = new DataReaderOld(event);
+  var selectedFile = event.target.files[0];
+  var reader = new FileReader();
+
+  reader.onload = function(event) {
+    contents = event.target.result.split("\n");
+  };
+
+  reader.readAsText(selectedFile);
+
+  //data = new DataReaderOld(event);
 }
 
 var btn = document.getElementById("addReader");
 btn.onclick = function() {
-  var dataReader = new DataReader(data);
+  var dataReader = new DataReader(contents);
+  console.log(contents)
+  console.log(dataReader)
   dataReader.createNode();
 
   // Stop the page from refreshing after btn click
@@ -269,12 +205,10 @@ function execute(queue) {
 
         // Set target's input
         tgtParent._private.data.info.input = parentOutput;
-        console.log(tgtParent)
         tgtParent._private.data.info.dependencias--;
       }
       
       else if (readyNode[0]._private.data.info.tipo == "writer") {
-        console.log(readyNode[0]._private.data.info.input)
         var writer = new DataWriterOld(readyNode[0]._private.data.info.input);
         var csvOutput = writer.gerarCsv();
         localStorage.csvOutput = csvOutput;

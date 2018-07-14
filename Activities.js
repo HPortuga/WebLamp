@@ -101,12 +101,52 @@ class Activity {
 }
 
 class DataReader extends Activity {
-	constructor(data) {
+	constructor(contents) {
 		super("reader");
-		this.setParentNode(data);
+		this.setOutput(contents, 0, 0);
+		this.setParentNode();
 	}
 
-	setParentNode(data) {
+	setOutput(contents, numLinhas, numDimensoes) {
+		if (contents == null) {
+		var matrix = new Array(numLinhas);
+		for (var i = 0; i < numLinhas; i++)
+			matrix[i] = new Array(numDimensoes);
+
+		} else {
+			var matrix = {
+				ids: [],
+				labels: [],
+				numLinhas: parseInt(contents[1]),
+				numDimensoes: parseInt(contents[2])
+			};
+
+			var dados = new Array(matrix.numLinhas);
+
+			for (var i = 0; i < matrix.numLinhas; i++) {
+				dados[i] = new Array(matrix.numDimensoes);
+			}
+
+			for (var i = 0; i < matrix.numLinhas; i++) {
+				var linha = contents[i+4].split(";");
+				matrix.ids[i] = parseInt(linha[0]);
+				for (var j = 0; j < matrix.numDimensoes; j++) {
+					dados[i][j] = parseFloat(linha[j+1]);
+				}
+				matrix.labels[i] = linha[j+1];
+			}
+
+			matrix.data = dados;
+	   }
+
+		
+		this.output = {
+			contents: contents,
+			matriz: matrix
+		}
+	}
+
+	setParentNode() {
 		this.parentNode.data.name = document.getElementById("readerName").value;
 		this.parentNode.data.info = {
 			nEntradas: 0,
@@ -114,7 +154,7 @@ class DataReader extends Activity {
 			height: 40,
 			tipo: this.type,
 			dependencias: 0,
-			output: data
+			output: this.output
 		};
 	}
 }
