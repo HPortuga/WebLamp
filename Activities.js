@@ -81,6 +81,7 @@ class Activity {
 	 	return childType;
 	}
 
+	// Locks nodes so they can't be dragged
 	lockNodes(nodes) {
 		for (var i = 1; i < nodes.length; i++) {
 	   	cy.$("#" + nodes[i].data.id)
@@ -89,6 +90,7 @@ class Activity {
 	   }
 	}
 
+	// Adds node to workflow
 	createNode() {
 		var newNode = new Array();
 		newNode.push(this.parentNode);
@@ -98,6 +100,7 @@ class Activity {
 
 		this.addChildNodes(newNode);
 	}
+
 }
 
 class DataReader extends Activity {
