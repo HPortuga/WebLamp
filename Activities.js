@@ -11,6 +11,30 @@ class Activity {
 		this.type = type;
 	}
 
+	execute() {
+		if (this.parentNode.data.info.dependencias > 0){
+			console.log("Sou Dependente")
+			return false;	
+		} 
+		else {
+			console.log("Sou Independente");
+			console.log(this)
+
+			// If has outs, get target
+			var tgtParent;
+			var targetId = this.parentNode.data.edges.to;
+			if (targetId != undefined) {
+				tgtParent = cy.$id(targetId);
+				tgtParent = tgtParent._private.data.parent;
+				tgtParent = cy.$id(tgtParent);
+			}
+
+			console.log(tgtParent);
+		}
+
+		return true;
+	}
+
 	// Creates a ghost node into parentNode to fix child's position
 	// (only for reader & writer)
 	newGhostNode() {
@@ -63,10 +87,14 @@ class Activity {
 			this.shouldAddOutput(childType);
 		}
 
+
 		for (var i = 0; i < childNodes.length; i++)
 			newNode.push(childNodes[i]);
 
+		
+		newNode[0].data.controlPanel = this;
 		cy.add(newNode);
+
 		this.lockNodes(newNode);
 	}
 

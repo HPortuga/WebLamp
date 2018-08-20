@@ -86,6 +86,15 @@ var cy = cytoscape({
 
 var eh = cy.edgehandles();
 
+cy.on("ehcomplete", (event, sourceNode, targetNode, addedEles) => {
+  sourceNode._private.parent._private.data.edges = {
+    to: targetNode._private.data.id
+  };
+  targetNode._private.parent._private.data.edges = {
+    from: sourceNode._private.data.id
+  };
+}); 
+
 // WorkflowManager //
 
 // Add Data Reader //
@@ -107,8 +116,6 @@ function onFileSelected(event) {
 var btn = document.getElementById("addReader");
 btn.onclick = function() {
   var dataReader = new DataReader(contents);
-  console.log(contents)
-  console.log(dataReader)
   dataReader.createNode();
 
   // Stop the page from refreshing after btn click
@@ -129,7 +136,6 @@ var addWriter = document.getElementById("addWriter");
 addWriter.onclick = function() {
   var dataWriter = new DataWriter();
   dataWriter.createNode();
-
   return false;
 }
 
@@ -145,6 +151,12 @@ function execute(queue) {
 
     // Check dependencies
     var node = queue[i];
+
+    if (node._private.data.controlPanel.execute())
+      console.log("oi");
+    else
+      console.log("tchau")
+
     if (node._private.data.info.dependencias > 0) continue;
     else {
       readyNode = queue.splice(i,1);
